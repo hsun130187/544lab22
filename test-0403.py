@@ -106,12 +106,13 @@ def itWorks(b,AESKeybin):
         sock.connect(server_address)
         Cb=(InAesK*(2**(b*e) % n)) % n
         if hex(int(AESKeybin, 2))[-1:]=='L':
-		AESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:-1].zfill(64))
-	else:
-		AESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:].zfill(64))
-	msg = ""
-	Eaes= binascii.a2b_hex(hex(Cb)[2:-1].zfill(512))
-	aes = AESCipher(AESKey)
+                AESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:-1].zfill(64))
+        else:
+                AESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:].zfill(64))
+        
+        msg = ""
+        Eaes= binascii.a2b_hex(hex(Cb)[2:-1].zfill(512))
+        aes = AESCipher(AESKey)
         try:
                 try:
                         message = aes.encrypt("THis is my test message")
@@ -148,11 +149,11 @@ def itWorks(b,AESKeybin):
                                 answer += data
                                 print('Received: {}'.format(aes.decrypt(answer)))
                                 result=aes.decrypt(answer)
-        result=aes.decrypt(answer)
-        if result=="THIS IS MY TEST MESSAGE":
-                finalResult=true
-        else:
-                finalResult=false
+                result=aes.decrypt(answer)
+                if result=="THIS IS MY TEST MESSAGE":
+                        finalResult=true
+                else:
+                        finalResult=false
         
 
         finally:
@@ -255,7 +256,7 @@ AESKeybin = AESKeybinb255
 
 for i in range(1,2):
 	b=255-i
-	print 'b = %s' % b
+	print ('b = %s' % b)
 	AESKeybin0="0"+AESKeybin[:-1]
 	AESKeybin1="1"+AESKeybin[:-1]
 	bool0=itWorks(b,AESKeybin0)
@@ -268,9 +269,9 @@ for i in range(1,2):
 		if bool1:
 			AESKeybin=AESKeybin1
 		else:
-			print 'Error!'
+			print ('Error!')
 			break
-	print "AESKeybin = %s" % AESKeybin
+	print( "AESKeybin = %s" % AESKeybin)
 
 
 
