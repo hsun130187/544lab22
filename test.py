@@ -4,16 +4,17 @@ import os
 import time
 import socket
 import sys
+import binascii
 from aes import AESCipher
 from Crypto.PublicKey import RSA
-
+from Crypto.Util.number import *
 '''def calC1bytes(c):
 
     # change long int to hex number,c1 bytes as AES key
     c1 = (c * (2 ** (b * e)) % n)
     c1bytes = long_to_bytes(c1)
     return c1bytes'''
-
+MESSAGE_LENGTH=15
 ciphertext1="""a6 b0 75 72 6c f2 bc 73  54 70 c4 94 2b c1 50 e0
   c2 5e c0 12 f4 31 a5 80  ed 3a 27 4e 89 66 e0 79 
   02 3f 2f 93 65 10 e5 b4  4b 99 2f 7b 28 dc bd 72   
@@ -85,29 +86,29 @@ with open(serverPublicKeyFileName, 'r') as f:
 MESSAGE_LENGTH = 2048
 b=255
 ciphertext1 = ''.join(ciphertext1.split())
-AESkey = chiptext1[:512]
+AESkey = ciphertext1[:512]
 InAesK = int(AESkey,16);
 c1 = (InAesK * (2 ** (b * e)) % n)
 c1bytes = long_to_bytes(c1)
-encryptedKey = key.encrypt(c1bytes, 32)[0]
+#encryptedKey = key.encrypt(c1bytes, 32)[0]
 GuessAESKeybin = "1"+"".zfill(255)
-if hex(int(AESKeybin, 2))[-1:]=='L':
-	MyguessAESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:-1].zfill(32))
+if hex(int(GuessAESKeybin, 2))[-1:]=='L':
+	MyguessAESKey = binascii.a2b_hex(hex(int(GuessAESKeybin, 2))[2:-1].zfill(64))
 else:
-	MyguessAESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:].zfill(32))
+	MyguessAESKey = binascii.a2b_hex(hex(int(GuessAESKeybin, 2))[2:].zfill(64))
 #MyguessAESKey=
 aes = AESCipher(MyguessAESKey)
 msg = ""
 
-'''try:
+try:
     # Send data
     try:
-        message = aes.encrypt('True')
+        message = aes.encrypt('THis is my test message')
     except ValueError:
         print("Client with port {} failed.".format(args.port),
               file=sys.stderr)
         exit(1)
-    msg = encryptedKey + message
+    msg = c1bytes + message
     # msg: AES key encrypted by the public key of RSA
     #      + message encrypted by the AES key
 
@@ -150,37 +151,7 @@ msg = ""
 
 finally:
     sock.close()
-'''
-#aes = AESCipher(AESKey)
-try:
-  # Send data
-  #message = str(args.message)
-  message = "April"
-  msg=encryptedKey + aes.encrypt(message)
-  #print 'message = "%s"' % message
-  #print 'msg: "%s"' % msg
-  # msg: AES key encrypted by the public key of RSA  + message encrypted by the AES key
-  sock.sendall(msg)
 
-  # Look for the response
-  amount_received = 0
-  amount_expected = len(message)
-  
-  if amount_expected % 16 != 0:
-    amount_expected += (16 - (len(message) % 16))
 
-  answer = ""
-
-  if amount_expected > amount_received:
-    while amount_received < amount_expected:
-      data = sock.recv(MESSAGE_LENGTH)
-      amount_received += len(data)
-      answer += data
-
-    print aes.decrypt(answer) == "APRIL           "
-    #print 'get = "%s"' % aes.decrypt(answer)
-
-finally:
-  sock.close()
 
 
