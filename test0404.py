@@ -33,17 +33,23 @@ message = ciphertext1[512:]
 c = int(message,16);
 encryptedMessage = long_to_bytes(c)
 
+if hex(int(AESKeyBin, 2))[-1:]=='L':
+	AESKey = binascii.a2b_hex(hex(int(AESKeyBin, 2))[2:-1].zfill(64))
+else:
+	AESKey = binascii.a2b_hex(hex(int(AESKeyBin, 2))[2:].zfill(64))
 #aes = AESCipher(MyguessAESKey)
-AESKeyInt2 = int(AESKeybin, 2)
-AESKey2 = long_to_bytes(AESKeyInt2)
-aes2 = AESCipher(AESKey2)
+#AESKeyInt2 = int(AESKeybin, 2)
+#AESKey2 = long_to_bytes(AESKeyInt2)
+aes= AESCipher(AESKey)
 #print(FinalAES)
 #print(AESKeyInt2)
-print(AESKey2)
+#print(AESKey2)
 #print(aes2)
 #print(len(FinalAES))
 #serverInt = int(servertext[:256],16)
 #serverBytes = long_to_bytes(serverInt)
 #print(serverBytes)
 #print aes2.decrypt(servertext[:256])
-print (aes2.decrypt(encryptedMessage))
+#print (aes2.decrypt(encryptedMessage))
+plaintext = aes.decrypt(encrypted_message)
+result=plaintext.decode("utf-8")
