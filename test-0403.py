@@ -61,12 +61,12 @@ parser.add_argument("-v", "--verbose",
 args = parser.parse_args()
 
 # Create a TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+'''sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect the socket to the port where the server is listening
 server_address = (args.ipaddress, int(args.port))
 sock.connect(server_address)
-sock.settimeout(2)
+sock.settimeout(2)'''
 
 #AESKey = os.urandom(32)
 #while AESKey[0] == 0:  # Make sure there aren't leading 0s
@@ -88,7 +88,7 @@ b=255
 ciphertext1 = ''.join(ciphertext1.split())
 AESkey = ciphertext1[:512]
 InAesK = int(AESkey,16);
-c1 = (InAesK * (2 ** (b * e)) % n)
+'''c1 = (InAesK * (2 ** (b * e)) % n)
 c1bytes = long_to_bytes(c1)
 #encryptedKey = key.encrypt(c1bytes, 32)[0]
 GuessAESKeybin = "0"+"".zfill(255)
@@ -99,7 +99,8 @@ else:
 #MyguessAESKey=
 aes = AESCipher(MyguessAESKey)
 msg = ""
-
+'''
+'''
 try:
     # Send data
     try:
@@ -151,7 +152,66 @@ try:
 
 finally:
     sock.close()
+'''
+def itWorks(b,AESKeybin):
+	#connection
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	sock.connect(server_address)
+	#parameters
+	Cb=(InAesK*(2**(b*e) % n)) % n
+	#print 'b = %s' % b
+	if hex(int(AESKeybin, 2))[-1:]=='L':
+		AESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:-1].zfill(64))
+	else:
+		AESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:].zfill(64))
+	#decrption
+	msg = ""
+	msg += binascii.a2b_hex(hex(Cb)[2:-1].zfill(512))
+	aes = AESCipher(AESKey)
+	try:
+	  message = "April"
+	  msg += aes.encrypt(message)
+	  sock.sendall(msg)
+	  # Look for the response
+	  amount_received = 0
+	  amount_expected = len(message)
+	  if amount_expected % 16 != 0:
+		amount_expected += (16 - (len(message) % 16))
+	  answer = ""
+	  if amount_expected > amount_received:
+		while amount_received < amount_expected:
+		  data = sock.recv(MESSAGE_LENGTH)
+		  amount_received += len(data)
+		  answer += data
+	finally:
+  		sock.close()
+	result=(aes.decrypt(answer) == "APRIL           ")
+	if result==True:	
+		print 'Cb = %s' % Cb
+	return result
 
+#initial value (verfied)
+AESKeybinb255 = "1"+"".zfill(255)
+AESKeybin = AESKeybinb255
+
+for i in range(1,2):
+	b=255-i
+	print 'b = %s' % b
+	AESKeybin0="0"+AESKeybin[:-1]
+	AESKeybin1="1"+AESKeybin[:-1]
+	bool0=itWorks(b,AESKeybin0)
+	time.sleep(7)
+	if bool0:
+		AESKeybin=AESKeybin0
+	else:
+		bool1=itWorks(b,AESKeybin1)
+		time.sleep(7)
+		if bool1:
+			AESKeybin=AESKeybin1
+		else:
+			print 'Error!'
+			break
+	print "AESKeybin = %s" % AESKeybin
 
 
 
