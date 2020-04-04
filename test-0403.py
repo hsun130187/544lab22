@@ -100,6 +100,65 @@ else:
 aes = AESCipher(MyguessAESKey)
 msg = ""
 '''
+
+def itWorks(b,AESKeybin):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(server_address)
+        Cb=(InAesK*(2**(b*e) % n)) % n
+        if hex(int(AESKeybin, 2))[-1:]=='L':
+		AESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:-1].zfill(64))
+	else:
+		AESKey = binascii.a2b_hex(hex(int(AESKeybin, 2))[2:].zfill(64))
+	msg = ""
+	Eaes= binascii.a2b_hex(hex(Cb)[2:-1].zfill(512))
+	aes = AESCipher(AESKey)
+        try:
+                try:
+                        message = aes.encrypt("THis is my test message")
+                        
+                except ValueError:
+                        print("Client with port {} failed.".format(args.port),file=sys.stderr)
+                        exit(1)
+                msg = Eaes + message
+                if args.verbose is True:
+                        print('Sending: {}'.format(message.hex()))
+                        sock.sendall(msg)
+                amount_received = 0
+                amount_expected = len(message)
+                if amount_expected % 16 != 0:
+                        amount_expected += (16 - (len(message) % 16))
+                answer = b''
+                if amount_expected > amount_received:
+                        while amount_received < amount_expected:
+                                try:
+                                        data = sock.recv(MESSAGE_LENGTH)
+                                except socket.timeout as e:
+                                        err = e.args[0]
+                                        if err == 'timed out':
+                                                print('Connection timed out, waiting for retry',file=sys.stderr)
+                                                time.sleep(1)
+                                                continue
+                                        else:
+                                                print('Another issue: {}'.format(e),file=sys.stderr)
+                                                break
+                                except socket.error as e:
+                                        print('Socket error: {}'.format(e),file=sys.stderr)
+                                        break
+                                amount_received += len(data)
+                                answer += data
+                                print('Received: {}'.format(aes.decrypt(answer)))
+                                result=aes.decrypt(answer)
+        result=aes.decrypt(answer)
+        if result=="THIS IS MY TEST MESSAGE":
+                finalResult=true
+        else:
+                finalResult=false
+        
+
+        finally:
+                sock.close()
+        return finalResult
+        
 '''
 try:
     # Send data
@@ -153,7 +212,7 @@ try:
 finally:
     sock.close()
 '''
-def itWorks(b,AESKeybin):
+'''def itWorks(b,AESKeybin):
 	#connection
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	sock.connect(server_address)
@@ -189,7 +248,7 @@ def itWorks(b,AESKeybin):
 	if result==True:	
 		print 'Cb = %s' % Cb
 	return result
-
+'''
 #initial value (verfied)
 AESKeybinb255 = "1"+"".zfill(255)
 AESKeybin = AESKeybinb255
